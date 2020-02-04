@@ -1,29 +1,43 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:speech_recognition/speech_recognition.dart';
-class SpeechRecPage extends StatefulWidget {
+
+
+class SpeechRecognitionPage extends StatefulWidget {
   @override
-  _SpeechRecPageState createState() => _SpeechRecPageState();
+  _SpeechRecognitionPageState createState() => _SpeechRecognitionPageState();
 }
-class _SpeechRecPageState extends State<SpeechRecPage> {
+
+class _SpeechRecognitionPageState extends State<SpeechRecognitionPage> {
   SpeechRecognition _speechRecognition;
+
+  // states for handling record availability and if its listening
   bool _isAvailable = false;
   bool _isListening = false;
-  String resultText = '';
-  int _audioLength = 0;
+
+  // Result string after parsing speech to text
+  String _speechText = "";
+
+  // variables for showing timecode
   int _hour = 0;
   int _min = 0;
   int _sec = 0;
-  double wps;
-  String displayText = "";
+
+  // for interchange Icons regarded to the app is recording or not
+  var _micIcon = Icons.mic_none;
+
+  // variable fo calculating wps
+  int _audioLength = 0;
+  double _wps;
+  String _displayText = "";
 
   @override
   void initState() {
     super.initState();
-    initSpeechRecognizer();
+    _initSpeechRecognizer();
   }
-  void initSpeechRecognizer() {
+
+  void _initSpeechRecognizer() {
     _speechRecognition = SpeechRecognition();
     _speechRecognition.setAvailabilityHandler((bool result) {
       setState(() {
@@ -33,12 +47,12 @@ class _SpeechRecPageState extends State<SpeechRecPage> {
     _speechRecognition.setRecognitionStartedHandler(() {
       setState(() {
         _isListening = true;
-        timing();
+        _handleTimer();
       });
     });
     _speechRecognition.setRecognitionResultHandler((String speech) {
       setState(() {
-        resultText = speech;
+        _speechText = speech;
       });
     });
     _speechRecognition.setRecognitionCompleteHandler(() {
@@ -53,7 +67,7 @@ class _SpeechRecPageState extends State<SpeechRecPage> {
     });
   }
 
-  void timing() {
+  void _handleTimer() {
     new Timer.periodic(Duration(seconds: 1), (timer) {
       setState((){
           if (_isListening == false) {
@@ -75,17 +89,17 @@ class _SpeechRecPageState extends State<SpeechRecPage> {
     });
   }
 
-  void rec() {
+  void _startRecording() {
     if (_isAvailable && !_isListening) {
       _speechRecognition
         .listen(locale: 'en_US')
         .then((result) => print('$result'));
     }
-    _reset();
-    displayText = "";
+    _resetTimer();
+    _displayText = "";
   }
 
-  void stop() {
+  void _stopRecording() {
     if (_isListening) {
       _speechRecognition.stop().then((result) {
         setState(() {
@@ -95,19 +109,30 @@ class _SpeechRecPageState extends State<SpeechRecPage> {
     }
   }
 
-  void calc() {
-    int wordCount = resultText.split(" ").length;
-    print("${wordCount.toString()} : ${_audioLength.toString()}");
-    print("WPS: ${(wordCount+1)/_audioLength}");
-    setState(() {
-      wps = (wordCount+1)/_audioLength;  
-    });
-
-    displayText = "You spoke ${wps.toString().length > 5 ? wps.toString().substring(0, 4) : wps.toString()} word per second!";
-    
+  // handle recording based on the state
+  void _handleRecording() {
+    if (_isListening) {
+      setState(() {
+        _micIcon = Icons.mic_none;  
+      });
+      _stopRecording();
+    } else {
+      setState(() {
+        _micIcon = Icons.mic;  
+      });
+      _startRecording();
+    }
   }
 
-  void _reset() {
+  void _calculateWps() {
+    setState(() {
+      _wps = (_speechText.split(" ").length+1) / _audioLength;  
+    });
+
+    _displayText = "You spoke ${_wps.toString().length > 5 ? _wps.toString().substring(0, 4) : _wps.toString()} words per second!";
+  }
+
+  void _resetTimer() {
     _audioLength = 0;
     setState(() {
       _hour = 0;
@@ -123,29 +148,25 @@ class _SpeechRecPageState extends State<SpeechRecPage> {
             child: Column(
           children: <Widget>[
             SizedBox(height: 75),
-            Text("Start Recording", style: TextStyle(color: Color(0xFF020243), fontSize: 30)),
+            Text("Eloquent", style: TextStyle(color: Color(0xFF020243), fontSize: 30)),
             SizedBox(height: 50),
             Text("${_hour.toString()}:${_min.toString()}:${_sec.toString()}", style: TextStyle(color: Color(0xFF020243), fontSize: 20)),
             SizedBox(height: 100),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                IconButton(icon: Icon(Icons.mic, color: Color(0xFF020243)), iconSize: 50, onPressed: rec),
+                IconButton(icon: Icon(_micIcon, color: Color(0xFF020243)), iconSize: 50, onPressed: _handleRecording),
                 SizedBox(width: 50),
-                IconButton(icon: Icon(Icons.stop, color: Color(0xFF020243)),iconSize: 50, onPressed: stop),
-                SizedBox(width: 50),
-                IconButton(icon: Icon(Icons.delete, color: Color(0xFF020243)),iconSize: 50, onPressed: _reset),
+                IconButton(icon: Icon(Icons.delete, color: Color(0xFF020243)),iconSize: 50, onPressed: _resetTimer),
               ],
             ),
             SizedBox(height: 180),
-            //IconButton(icon: Icon(Icons.graphic_eq, color: Color(0xFF020243)), iconSize: 60, onPressed: calc),
             GestureDetector(
               child: Image(image: AssetImage("assets/Eloquent.png"), width: 100, height: 100),
-            
-              onTap: calc,
+              onTap: _calculateWps,
             ),
             SizedBox(height: 55),
-            Text(displayText, style: TextStyle(color: Color(0xFF020243), fontSize: 20))
+            Text(_displayText, style: TextStyle(color: Color(0xFF020243), fontSize: 20))
           ],
         )
       )

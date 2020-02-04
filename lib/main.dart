@@ -1,6 +1,6 @@
-import 'package:eloquent_hackathon/screens/speechrec.dart';
 import 'package:flutter/material.dart';
-import 'package:eloquent_hackathon/screens/recording_page.dart';
+import 'package:eloquent_hackathon/screens/basic_recorder.dart';
+import 'package:eloquent_hackathon/screens/speech_recognition.dart';
 
 void main() => runApp(MyApp());
 
@@ -9,8 +9,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      // home: RecordingPage(),
-      home: SpeechRecPage(),
+      //home: BasicRecorderPage(),
+      home: SpeechRecognitionPage(),
       debugShowCheckedModeBanner: false,
     );
   }

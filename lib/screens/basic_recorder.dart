@@ -1,43 +1,53 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 
-class RecordingPage extends StatefulWidget {
+
+class BasicRecorderPage extends StatefulWidget {
   @override
-  _RecordingPageState createState() => _RecordingPageState();
+  _BasicRecorderPageState createState() => _BasicRecorderPageState();
 }
 
-class _RecordingPageState extends State<RecordingPage> {
+class _BasicRecorderPageState extends State<BasicRecorderPage> {
   FlutterSound flutterSound = FlutterSound();
 
+  // handling what should happen if the app gets minimized
   @override
   void dispose() {
     flutterSound.stopRecorder();
     super.dispose();
   }
 
-  int _audioLength = 0;
+  // variable for calculating wps
+  // int _audioLength = 0;
+
+  // variables for showing timecode
   int _hour = 0;
   int _min = 0;
   int _sec = 0;
+
+  // state if app is recording or playing
   bool _isRecording = false;
+  bool _isPlaying = false;
+
+  // for interchange Icons regarded to the app is recording or playing or not
   var _micIcon = Icons.mic_none;
+  var _playIcon = Icons.play_circle_outline;
 
   Future<void> _startRecording() async {
+    _resetTimer();
     Directory tempDir = await getTemporaryDirectory();
     File outputFile = File('${tempDir.path}/flutter_sound-tmp.aac');
-    String path = await flutterSound.startRecorder(uri: outputFile.path, codec: t_CODEC.CODEC_AAC);
-    print(path);
+    await flutterSound.startRecorder(uri: outputFile.path, codec: t_CODEC.CODEC_AAC);
   }
 
   Future<void> _endRecording() async {
-    String result = await flutterSound.stopRecorder();
-    print(result);
+    await flutterSound.stopRecorder();
   }
 
+  // handle recording based on the state
   void _handleRecording() {
     if (_isRecording) {
       _isRecording = false;
@@ -59,7 +69,7 @@ class _RecordingPageState extends State<RecordingPage> {
             timer.cancel();
             return;
           }
-          _audioLength += 1;
+          //_audioLength += 1;
           _sec += 1;
           if (_sec > 59) {
             _sec = 0;
@@ -74,15 +84,35 @@ class _RecordingPageState extends State<RecordingPage> {
     });
   }
 
-  Future<void> _playRecording() async {
+  Future<void> _startPlayback() async {
     Directory tempDir = await getTemporaryDirectory();
     File fin = File('${tempDir.path}/flutter_sound-tmp.aac');
-    String result = await flutterSound.startPlayer(fin.path);
-    print(result);
+    await flutterSound.startPlayer(fin.path);
   }
 
-  void _reset() {
-    _audioLength = 0;
+  Future<void> _stopPlayback() async {
+    await flutterSound.stopPlayer();
+  }
+
+  // handle playback based on the state
+  void _handlePlayback() {
+    if (_isPlaying) {
+      _isPlaying = false;
+      setState(() {
+        _playIcon = Icons.play_circle_outline;  
+      });
+      _stopPlayback();
+    } else {
+      _isPlaying = true;
+      setState(() {
+        _playIcon = Icons.pause_circle_outline;  
+      });
+      _startPlayback();
+    }
+  }
+
+  void _resetTimer() {
+    //_audioLength = 0;
     setState(() {
       _hour = 0;
     _min = 0;
@@ -97,7 +127,7 @@ class _RecordingPageState extends State<RecordingPage> {
             child: Column(
           children: <Widget>[
             SizedBox(height: 75),
-            Text("Start Recording", style: TextStyle(color: Color(0xFF020243), fontSize: 30)),
+            Text("Eloquent", style: TextStyle(color: Color(0xFF020243), fontSize: 30)),
             SizedBox(height: 50),
             Text("${_hour.toString()}:${_min.toString()}:${_sec.toString()}", style: TextStyle(color: Color(0xFF020243), fontSize: 20)),
             SizedBox(height: 100),
@@ -106,13 +136,15 @@ class _RecordingPageState extends State<RecordingPage> {
               children: <Widget>[
                 IconButton(icon: Icon(_micIcon, color: Color(0xFF020243)), iconSize: 50, onPressed: _handleRecording),
                 SizedBox(width: 50),
-                IconButton(icon: Icon(Icons.play_arrow, color: Color(0xFF020243)),iconSize: 50, onPressed: _playRecording),
+                IconButton(icon: Icon(_playIcon, color: Color(0xFF020243)),iconSize: 50, onPressed: _handlePlayback),
                 SizedBox(width: 50),
-                IconButton(icon: Icon(Icons.delete, color: Color(0xFF020243)),iconSize: 50, onPressed: _reset)
+                IconButton(icon: Icon(Icons.delete, color: Color(0xFF020243)),iconSize: 50, onPressed: _resetTimer)
               ],
             ),
             SizedBox(height: 200),
-            IconButton(icon: Icon(Icons.graphic_eq, color: Color(0xFF020243)), iconSize: 60, onPressed: null),
+            GestureDetector(
+              child: Image(image: AssetImage("assets/Eloquent.png"), width: 100, height: 100),
+            ),
             SizedBox(height: 25),
           ],
         )
