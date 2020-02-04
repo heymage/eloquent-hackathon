@@ -12,6 +12,12 @@ class _RecordingPageState extends State<RecordingPage> {
   FlutterSound flutterSound = FlutterSound();
 
   @override
+  void dispose() {
+    flutterSound.stopRecorder();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
