@@ -1,21 +1,27 @@
 PODS:
   - Flutter (1.0.0)
-  - flutter_audio_recorder (0.5.4):
+  - flutter_audio_recorder (0.4.9):
+    - Flutter
+  - path_provider (0.0.1):
     - Flutter
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
   - flutter_audio_recorder (from `.symlinks/plugins/flutter_audio_recorder/ios`)
+  - path_provider (from `.symlinks/plugins/path_provider/ios`)
 
 EXTERNAL SOURCES:
   Flutter:
     :path: Flutter
   flutter_audio_recorder:
     :path: ".symlinks/plugins/flutter_audio_recorder/ios"
+  path_provider:
+    :path: ".symlinks/plugins/path_provider/ios"
 
 SPEC CHECKSUMS:
   Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
-  flutter_audio_recorder: eb998d4e75e59b39d9e3ca1818a5e0f3a82f5836
+  flutter_audio_recorder: d3a1c503ef53a0cff8ba3257a73de58dc4b639c9
+  path_provider: fb74bd0465e96b594bb3b5088ee4a4e7bb1f2a9d
 
 PODFILE CHECKSUM: 1b66dae606f75376c5f2135a8290850eeb09ae83
 
