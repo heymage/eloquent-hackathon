@@ -8,17 +8,34 @@ class RecPage extends StatefulWidget {
 
 class _RecPageState extends State<RecPage> {
 
-  double _value = 0.0;
+  int _hour = 0;
+  int _min = 0;
+  int _sec = 0;
   bool _isRecording = false;
 
   void _recordSpeech(){
-    new Timer.periodic(new Duration(milliseconds: 10), (timer) {
+    if (_isRecording) {
+      _isRecording = false;  
+    } else {
+      _isRecording = true;
+    }
+  
+    new Timer.periodic(new Duration(milliseconds: 1000), (timer) {
       setState((){
-        if (!_isRecording){
+        if (_isRecording == false){
           timer.cancel();
           return;
         }
-        _value += 0.01;
+        _sec += 1;
+        if (_sec > 59) {
+          _sec = 0;
+          _min += 1;
+          if (_min > 59 && _sec > 59) {
+            _sec = 0;
+            _min = 0;
+            _hour += 1;
+          }
+        }
       });
     });
   }
@@ -35,10 +52,9 @@ class _RecPageState extends State<RecPage> {
             SizedBox(height: 50),
             Text("Record your speech to get feedback on it"),
             SizedBox(height: 20),
-            Text(_value.toString()),
+            Text("${_hour.toString()}:${_min.toString()}:${_sec.toString()}"),
             SizedBox(height: 10),
-            IconButton(icon: Icon(Icons.mic_none), onPressed: _recordSpeech)
-
+            IconButton(icon: Icon(Icons.mic_none), onPressed: _recordSpeech),
           ],
         )
       )
