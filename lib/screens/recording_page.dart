@@ -112,7 +112,8 @@ class _RecordingPageState extends State<RecordingPage> {
               ],
             ),
             SizedBox(height: 200),
-            IconButton(icon: Icon(Icons.graphic_eq, color: Color(0xFF020243)), iconSize: 60, onPressed: null)
+            IconButton(icon: Icon(Icons.graphic_eq, color: Color(0xFF020243)), iconSize: 60, onPressed: null),
+            SizedBox(height: 25),
           ],
         )
       )
