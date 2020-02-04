@@ -140,7 +140,8 @@ class _SpeechRecPageState extends State<SpeechRecPage> {
             SizedBox(height: 180),
             //IconButton(icon: Icon(Icons.graphic_eq, color: Color(0xFF020243)), iconSize: 60, onPressed: calc),
             GestureDetector(
-              child: Image(image: AssetImage("Eloquent.png"), width: 60, height: 60),
+              child: Image(image: AssetImage("assets/Eloquent.png"), width: 100, height: 100),
+            
               onTap: calc,
             ),
             SizedBox(height: 55),
