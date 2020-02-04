@@ -19,6 +19,7 @@ class _RecordingPageState extends State<RecordingPage> {
     super.dispose();
   }
 
+  int _audioLength = 0;
   int _hour = 0;
   int _min = 0;
   int _sec = 0;
@@ -26,19 +27,6 @@ class _RecordingPageState extends State<RecordingPage> {
   var _micIcon = Icons.mic_none;
 
   Future<void> _startRecording() async {
-    new Timer.periodic(Duration(seconds: 1), (Timer timer) {
-      _sec += 1;
-      if (_sec > 59) {
-        _sec = 0;
-        _min += 1;
-        if (_min > 59) {
-          _sec = 0;
-          _min = 0;
-          _hour += 1;
-        }
-      }  
-      }
-    );
     Directory tempDir = await getTemporaryDirectory();
     File outputFile = File('${tempDir.path}/flutter_sound-tmp.aac');
     String path = await flutterSound.startRecorder(uri: outputFile.path, codec: t_CODEC.CODEC_AAC);
@@ -64,6 +52,26 @@ class _RecordingPageState extends State<RecordingPage> {
       });
       _startRecording();
     }
+
+    new Timer.periodic(Duration(seconds: 1), (timer) {
+      setState((){
+          if (_isRecording == false) {
+            timer.cancel();
+            return;
+          }
+          _audioLength += 1;
+          _sec += 1;
+          if (_sec > 59) {
+            _sec = 0;
+            _min += 1;
+            if (_min > 59 && _sec > 59) {
+              _sec = 0;
+              _min = 0;
+              _hour += 1;
+            }
+          }
+      });
+    });
   }
 
   Future<void> _playRecording() async {
@@ -71,6 +79,15 @@ class _RecordingPageState extends State<RecordingPage> {
     File fin = File('${tempDir.path}/flutter_sound-tmp.aac');
     String result = await flutterSound.startPlayer(fin.path);
     print(result);
+  }
+
+  void _reset() {
+    _audioLength = 0;
+    setState(() {
+      _hour = 0;
+    _min = 0;
+    _sec = 0;  
+    });
   }
 
   @override
@@ -84,14 +101,18 @@ class _RecordingPageState extends State<RecordingPage> {
             SizedBox(height: 50),
             Text("${_hour.toString()}:${_min.toString()}:${_sec.toString()}", style: TextStyle(color: Color(0xFF020243), fontSize: 20)),
             SizedBox(height: 100),
-            IconButton(icon: Icon(_micIcon), iconSize: 50, onPressed: _handleRecording),
-            SizedBox(height: 30),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                IconButton(icon: Icon(Icons.play_arrow), onPressed: _playRecording),
+                IconButton(icon: Icon(_micIcon, color: Color(0xFF020243)), iconSize: 50, onPressed: _handleRecording),
+                SizedBox(width: 50),
+                IconButton(icon: Icon(Icons.play_arrow, color: Color(0xFF020243)),iconSize: 50, onPressed: _playRecording),
+                SizedBox(width: 50),
+                IconButton(icon: Icon(Icons.delete, color: Color(0xFF020243)),iconSize: 50, onPressed: _reset)
               ],
             ),
+            SizedBox(height: 200),
+            IconButton(icon: Icon(Icons.graphic_eq, color: Color(0xFF020243)), iconSize: 60, onPressed: null)
           ],
         )
       )
