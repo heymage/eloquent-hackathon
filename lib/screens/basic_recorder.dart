@@ -126,8 +126,8 @@ class _BasicRecorderPageState extends State<BasicRecorderPage> {
         body: Center(
             child: Column(
           children: <Widget>[
-            SizedBox(height: 75),
-            Text("Eloquent", style: TextStyle(color: Color(0xFF020243), fontSize: 30)),
+            SizedBox(height: 25),
+            Text("Audio Recorder", style: TextStyle(color: Color(0xFF020243), fontSize: 20)),
             SizedBox(height: 50),
             Text("${_hour.toString()}:${_min.toString()}:${_sec.toString()}", style: TextStyle(color: Color(0xFF020243), fontSize: 20)),
             SizedBox(height: 100),
@@ -141,11 +141,6 @@ class _BasicRecorderPageState extends State<BasicRecorderPage> {
                 IconButton(icon: Icon(Icons.delete, color: Color(0xFF020243)),iconSize: 50, onPressed: _resetTimer)
               ],
             ),
-            SizedBox(height: 200),
-            GestureDetector(
-              child: Image(image: AssetImage("assets/Eloquent.png"), width: 100, height: 100),
-            ),
-            SizedBox(height: 25),
           ],
         )
       )

@@ -147,8 +147,8 @@ class _SpeechRecognitionPageState extends State<SpeechRecognitionPage> {
       body: Center(
             child: Column(
           children: <Widget>[
-            SizedBox(height: 75),
-            Text("Eloquent", style: TextStyle(color: Color(0xFF020243), fontSize: 30)),
+            SizedBox(height: 25),
+            Text("Words per second recognizer", style: TextStyle(color: Color(0xFF020243), fontSize: 20)),
             SizedBox(height: 50),
             Text("${_hour.toString()}:${_min.toString()}:${_sec.toString()}", style: TextStyle(color: Color(0xFF020243), fontSize: 20)),
             SizedBox(height: 100),
@@ -160,12 +160,9 @@ class _SpeechRecognitionPageState extends State<SpeechRecognitionPage> {
                 IconButton(icon: Icon(Icons.delete, color: Color(0xFF020243)),iconSize: 50, onPressed: _resetTimer),
               ],
             ),
-            SizedBox(height: 180),
-            GestureDetector(
-              child: Image(image: AssetImage("assets/Eloquent.png"), width: 100, height: 100),
-              onTap: _calculateWps,
-            ),
-            SizedBox(height: 55),
+            SizedBox(height: 125),
+            IconButton(icon: Icon(Icons.graphic_eq), onPressed: _calculateWps, iconSize: 75),
+            SizedBox(height: 25),
             Text(_displayText, style: TextStyle(color: Color(0xFF020243), fontSize: 20))
           ],
         )
